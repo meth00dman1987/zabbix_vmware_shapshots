@@ -1,0 +1,69 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 11ddd6da0629421b95469219bece256d
+      template: 'VmWare Snapshots'
+      name: 'VmWare Snapshots'
+      groups:
+        - name: Templates
+      items:
+        - uuid: f2eeb92d43f94330854ab8939295756e
+          name: 'Колличество устаревших снапшотов'
+          type: DEPENDENT
+          key: snapshot.count
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.count
+          master_item:
+            key: 'vmware_old_snapshot.py[{$VCENTER_HOST},{$VCENTER_USER},{$VCENTER_PASS},{$SNAP_AGE_HOURS},{$SNAP_VM_EXCLUDE_REGEX}]'
+        - uuid: cbe9397d32684832ad64750c9d55ecbc
+          name: 'Список устаревших снапшотов'
+          type: DEPENDENT
+          key: snapshot.list
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var o = JSON.parse(value);
+                  if (!o.snapshots || o.snapshots.length === 0) return "OK: no old snapshots";
+                  
+                  var lines = [];
+                  lines.push("Old snapshots: " + o.count + " (threshold " + o.age_hours_threshold + "h)");
+                  for (var i = 0; i < o.snapshots.length; i++) {
+                    var s = o.snapshots[i];
+                    lines.push(
+                      (i+1) + ") VM=" + s.vm + " | Snapshot=" + s.snapshot +
+                      " | Created(UTC)=" + s.created_utc + " | Age(h)=" + s.age_hours
+                    );
+                  }
+                  return lines.join("\n");
+          master_item:
+            key: 'vmware_old_snapshot.py[{$VCENTER_HOST},{$VCENTER_USER},{$VCENTER_PASS},{$SNAP_AGE_HOURS},{$SNAP_VM_EXCLUDE_REGEX}]'
+          triggers:
+            - uuid: c346b3d586954b6ab90d15bfa22ff502
+              expression: 'change(/VmWare Snapshots/snapshot.list)<>0'
+              name: 'Обнаружены устаревшие снапшоты'
+              priority: HIGH
+        - uuid: 7f81c7e4a6d64298817af176adad862d
+          name: 'Master item'
+          type: EXTERNAL
+          key: 'vmware_old_snapshot.py[{$VCENTER_HOST},{$VCENTER_USER},{$VCENTER_PASS},{$SNAP_AGE_HOURS},{$SNAP_VM_EXCLUDE_REGEX}]'
+          delay: 60m
+          value_type: TEXT
+      macros:
+        - macro: '{$SNAP_AGE_HOURS}'
+          value: '72'
+          description: 'Возраст снимка в часах'
+        - macro: '{$SNAP_VM_EXCLUDE_REGEX}'
+          description: 'rexex исключения по имени снапшота e.g. ^(TEST|TMP)- или (?i).*backup.*'
+        - macro: '{$VCENTER_HOST}'
+          value: 192.168.244.170
+        - macro: '{$VCENTER_PASS}'
+          value: Intzab99@
+        - macro: '{$VCENTER_USER}'
+          value: zabbix@vsphere.local
