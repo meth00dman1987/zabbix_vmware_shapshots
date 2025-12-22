@@ -29,3 +29,5 @@ sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/vmware_old_snapshots.py
 {$VCENTER_PASS} - пароль
 
 
+Обратите внимание!
+Если вы получаете оповещения через Telegram и снапшотов много, может возникнуть ошибка отправки из-за ограничения тела сообщения самим Telegram.
