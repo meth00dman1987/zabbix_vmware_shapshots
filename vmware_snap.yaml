@@ -62,8 +62,8 @@ zabbix_export:
         - macro: '{$SNAP_VM_EXCLUDE_REGEX}'
           description: 'rexex исключения по имени ВМ e.g. ^(TEST|TMP)- или (?i).*backup.*'
         - macro: '{$VCENTER_HOST}'
-          value: 192.168.244.170
+          value: 192.168.0.1
         - macro: '{$VCENTER_PASS}'
-          value: Intzab99@
+          value: Password
         - macro: '{$VCENTER_USER}'
-          value: zabbix@vsphere.local
+          value: user@vsphere.local
