@@ -60,7 +60,7 @@ zabbix_export:
           value: '72'
           description: 'Возраст снимка в часах'
         - macro: '{$SNAP_VM_EXCLUDE_REGEX}'
-          description: 'rexex исключения по имени снапшота e.g. ^(TEST|TMP)- или (?i).*backup.*'
+          description: 'rexex исключения по имени ВМ e.g. ^(TEST|TMP)- или (?i).*backup.*'
         - macro: '{$VCENTER_HOST}'
           value: 192.168.244.170
         - macro: '{$VCENTER_PASS}'
