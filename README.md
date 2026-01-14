@@ -20,7 +20,7 @@ sudo chown zabbix:zabbix /usr/lib/zabbix/externalscripts/vmware_old_snapshot.py
 
 {$SNAP_AGE_HOURS} - возраст снапшота в часах
 
-{$SNAP_VM_EXCLUDE_REGEX} - регулярка для исключения снапшотов на которые не надо реагировать
+{$SNAP_VM_EXCLUDE_REGEX} - регулярка для исключения ВМ на которые не надо реагировать
 
 {$VCENTER_HOST} - адрес vcentr
 
